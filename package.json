@@ -12,7 +12,7 @@
   "dependencies": {
     "dotenv": "^8.0.0",
     "jalali-moment": "^3.3.1",
-    "message.io-client": "^1.0.794",
+    "message.io-client": "^1.1.0",
     "mongoose": "^5.6.2",
     "node-redis-pubsub": "^4.0.0"
   }

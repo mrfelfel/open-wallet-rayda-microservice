@@ -11,13 +11,12 @@ const moment = require('jalali-moment');
 
 
 const msgApp = require("message.io-client")({
-  port: 6379,
-  host: process.env.MSG_HOST,
-  auth: process.env.MSG_PASS,
-  scope: process.env.MSG_SCOPE,
+  pass: process.env.MSG_PASS,
 });
 
 const Query = msgApp.Query
+const Emit = msgApp.Emit
+
 Query({
   scope: 'financial',
   address: 'user/wallet/data',
@@ -31,7 +30,7 @@ Query({
     })
 
 
-    nrp.emit("data_gram", {
+    Emit("data_gram", {
       uid: data.sender,
       scope: 'wallet',
       address: 'wallet/home',
@@ -75,7 +74,7 @@ Query({
 
 
     console.log(findedTransactions)
-    nrp.emit("data_gram", {
+    Emit("data_gram", {
       uid: data.sender,
       scope: 'wallet',
       address: 'wallet/transactions',
@@ -103,7 +102,7 @@ Query({
 
 
   if (data.sender == data.data.national) {
-    nrp.emit("gram_message", {
+    Emit("gram_message", {
       uid: data.sender,
       message: "انتقال وجه از خودتان به خودتان ممکن نیست"
     })
@@ -111,7 +110,7 @@ Query({
   }
 
   if (data.data.cost <= 0) {
-    nrp.emit("gram_message", {
+    Emit("gram_message", {
       uid: data.sender,
       message: "مبلغ باید بزرگتر از صفر باشد"
     })
@@ -119,7 +118,7 @@ Query({
   }
 
   if (isNaN(data.data.cost)) {
-    nrp.emit("gram_message", {
+    Emit("gram_message", {
       uid: data.sender,
       message: "داده ی عددی وارد کنید"
     })
@@ -131,7 +130,7 @@ Query({
   let user = await financial.balance.findOne({ uid: data.data.national })
 
   if (!user) {
-    nrp.emit("gram_message", {
+    Emit("gram_message", {
       uid: data.sender,
       message: "این کاربر در حال حاضر حساب مالی ندارد"
     })
@@ -184,7 +183,7 @@ Query({
               value: (data.data.cost * -1)
             }
           }).exec();
-        nrp.emit("data_gram", {
+        Emit("data_gram", {
           uid: data.sender,
           scope: 'reserveSystem',
           address: 'Foodlist/balancing',
@@ -197,7 +196,7 @@ Query({
             }
           }
         })
-        nrp.emit("data_gram", {
+        Emit("data_gram", {
           uid: data.data.national,
           scope: 'reserveSystem',
           address: 'Foodlist/balancing',
@@ -210,17 +209,17 @@ Query({
             }
           }
         })
-        nrp.emit("gram_message", {
+        Emit("gram_message", {
           uid: data.data.national,
           message: `${data.sender} مبلغ ${data.data.cost} ریال به شما انتقال داد`
         })
-        nrp.emit("gram_message", {
+        Emit("gram_message", {
           uid: data.sender,
           message: "یک انتقال اعتبار موفق از سمت شما انجام شد"
         })
 
       } else {
-        nrp.emit("gram_message", {
+        Emit("gram_message", {
           uid: data.sender,
           message: "اختلال در انتقال اعتبار e789"
         })
@@ -228,5 +227,5 @@ Query({
       }
     })
 
-  nrp.emit("transfer", data)
+  Emit("transfer", data)
 })
