@@ -12,6 +12,7 @@ const moment = require('jalali-moment');
 
 const msgApp = require("message.io-client")({
   pass: process.env.MSG_PASS,
+  scopes : 'financial'
 });
 
 const Query = msgApp.Query
